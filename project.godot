@@ -1,0 +1,55 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "EditorPlugin",
+"class": "NavLink",
+"language": "GDScript",
+"path": "res://addons/NavLink/NavLink.gd"
+}, {
+"base": "Spatial",
+"class": "NavLinkAgent",
+"language": "GDScript",
+"path": "res://addons/NavLink/Scripts/NavLinkAgent.gd"
+}, {
+"base": "Navigation",
+"class": "NavLinkNavigation",
+"language": "GDScript",
+"path": "res://addons/NavLink/Scripts/NavLinkNavigation.gd"
+}, {
+"base": "Spatial",
+"class": "NavLinkPath",
+"language": "GDScript",
+"path": "res://addons/NavLink/Scripts/NavLinkPath.gd"
+} ]
+_global_script_class_icons={
+"NavLink": "",
+"NavLinkAgent": "",
+"NavLinkNavigation": "",
+"NavLinkPath": ""
+}
+
+[application]
+
+config/name="PluginDev_NavLinks"
+run/main_scene="res://Main.tscn"
+config/icon="res://icon.png"
+
+[autoload]
+
+DebugDraw3D="*res://DebugDraw/DebugDraw3D.tscn"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "NavLink" )
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"

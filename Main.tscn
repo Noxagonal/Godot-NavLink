@@ -1,0 +1,281 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://addons/NavLink/Scripts/NavLinkPath.gd" type="Script" id=1]
+[ext_resource path="res://addons/NavLink/Scripts/NavLinkNavigation.gd" type="Script" id=2]
+[ext_resource path="res://addons/NavLink/Scenes/NavLinkPathStart.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/NavLink/Scenes/NavLinkPathEnd.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Main.gd" type="Script" id=5]
+[ext_resource path="res://Camera.tscn" type="PackedScene" id=6]
+
+[sub_resource type="NavigationMesh" id=1]
+vertices = PoolVector3Array( 5.3, 3.4, -6.71375, 5.3, 3, -5.91375, 6.7, 3, -5.91375, 5.1, 3.4, -6.91375, 5.3, 3.4, -6.71375, 6.7, 3, -5.91375, 6.7, 3.4, -9.01375, 6.7, 3.4, -6.94709, 3.3, 3.4, -9.01375, 2.9, 3.4, -8.71375, 3, 3.4, -6.91375, 5.1, 3.4, -6.91375, 6.7, 3.4, -9.01375, 2.7, 3.4, -6.71375, 3, 3.4, -6.91375, 2.9, 3.4, -8.71375, -2.7, 3.4, -8.71375, -2.7, 3.4, -3.21376, 2.7, 3.4, -3.21376, 2.7, 3.4, -6.71375, -2.7, 3.4, -8.71375, 5.3, 0.8, -0.113755, 6.7, 0.8, -0.113755, 6.7, 3, -5.91375, 5.3, 3, -5.91375, -6.7, 0.4, -4.71376, -6.7, 0.4, 4.68624, 2.7, 0.4, 4.68624, 2.7, 0.4, -4.71376, 6.7, 0.8, -0.113755, 5.3, 0.8, -0.113755, 5.3, 0.4, 0.686245, 6.7, 0.8, -0.113755, 5.3, 0.4, 0.686245, 5.1, 0.4, 0.886245, 6.7, 0.4, 3.08625, 5.1, 0.4, 0.886245, 3.4, 0.4, 0.886245, 3.4, 0.4, 3.08625, 6.7, 0.4, 3.08625 )
+polygons = [ PoolIntArray( 2, 1, 0 ), PoolIntArray( 4, 3, 5 ), PoolIntArray( 5, 3, 7 ), PoolIntArray( 7, 3, 6 ), PoolIntArray( 9, 8, 10 ), PoolIntArray( 10, 8, 11 ), PoolIntArray( 11, 8, 12 ), PoolIntArray( 14, 13, 15 ), PoolIntArray( 15, 13, 16 ), PoolIntArray( 18, 17, 19 ), PoolIntArray( 19, 17, 20 ), PoolIntArray( 24, 23, 21 ), PoolIntArray( 21, 23, 22 ), PoolIntArray( 28, 27, 25 ), PoolIntArray( 25, 27, 26 ), PoolIntArray( 31, 30, 29 ), PoolIntArray( 33, 32, 34 ), PoolIntArray( 34, 32, 35 ), PoolIntArray( 37, 36, 38 ), PoolIntArray( 38, 36, 39 ) ]
+cell/size = 0.1
+agent/radius = 0.3
+agent/max_climb = 0.2
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Spatial
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+
+
+var route = []
+var route_cost: float = 0.0
+var route_end_position: Vector3 = Vector3.ZERO
+
+var next_route_node: int
+
+export var enable_movement:bool = false
+export var speed:float = 5.0
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+	
+	$\"/root/DebugDraw3D\".draw_path(route)
+	$\"/root/DebugDraw3D\".draw_text(route_end_position, String(route_cost))
+	
+	if enable_movement:
+		if len(route) > next_route_node:
+			var next_pos:Vector3 = route[next_route_node]
+			if next_pos.distance_to(global_transform.origin) > 0.1:
+				var direction = (next_pos - global_transform.origin).normalized()
+				global_transform.origin += direction * delta * speed
+			else:
+				next_route_node += 1
+
+
+func _on_Main_follow_path(nav_link_path):
+	if not nav_link_path.empty():
+		route = nav_link_path.complete_path
+		route_cost = nav_link_path.complete_path_cost
+		route_end_position = route[len(route) - 1]
+		next_route_node = 1
+"
+
+[sub_resource type="CapsuleMesh" id=3]
+radius = 0.3
+
+[sub_resource type="CylinderMesh" id=4]
+top_radius = 0.1
+bottom_radius = 0.001
+height = 0.2
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SpatialMaterial" id=5]
+flags_unshaded = true
+albedo_color = Color( 0, 1, 0, 1 )
+
+[sub_resource type="CylinderMesh" id=6]
+top_radius = 0.001
+bottom_radius = 0.1
+height = 0.2
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SpatialMaterial" id=7]
+flags_unshaded = true
+albedo_color = Color( 1, 0, 0, 1 )
+
+[node name="Main" type="Spatial"]
+script = ExtResource( 5 )
+
+[node name="NavLinkNavigation" type="Navigation" parent="."]
+script = ExtResource( 2 )
+
+[node name="NavigationMeshInstance" type="NavigationMeshInstance" parent="NavLinkNavigation"]
+navmesh = SubResource( 1 )
+
+[node name="Spatial" type="Spatial" parent="NavLinkNavigation/NavigationMeshInstance"]
+
+[node name="CSGBox" type="CSGBox" parent="NavLinkNavigation/NavigationMeshInstance/Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0 )
+use_collision = true
+width = 10.0
+height = 0.1
+depth = 10.0
+
+[node name="CSGBox3" type="CSGBox" parent="NavLinkNavigation/NavigationMeshInstance/Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 2 )
+use_collision = true
+width = 4.0
+height = 0.1
+depth = 2.63724
+
+[node name="CSGBox6" type="CSGBox" parent="NavLinkNavigation/NavigationMeshInstance/Spatial"]
+transform = Transform( -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 3, 1, 2 )
+use_collision = true
+width = 4.0
+height = 0.1
+depth = 2.63724
+
+[node name="CSGBox4" type="CSGBox" parent="NavLinkNavigation/NavigationMeshInstance/Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3, -8 )
+use_collision = true
+width = 4.0
+height = 0.1
+depth = 2.62751
+
+[node name="CSGBox5" type="CSGBox" parent="NavLinkNavigation/NavigationMeshInstance/Spatial"]
+transform = Transform( 1, 0, 0, 0, 0.927484, -0.373862, 0, 0.373862, 0.927484, 6, 1.5, -3 )
+use_collision = true
+height = 0.1
+depth = 8.0
+
+[node name="CSGBox2" type="CSGBox" parent="NavLinkNavigation/NavigationMeshInstance/Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -6 )
+use_collision = true
+width = 6.0
+height = 0.1
+depth = 6.0
+
+[node name="StartPoint" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.907062, 0, 1.32337 )
+script = SubResource( 2 )
+enable_movement = true
+
+[node name="MeshInstance" type="MeshInstance" parent="StartPoint"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.9, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="NavLinks" type="Spatial" parent="."]
+
+[node name="NavLinkPath" type="Spatial" parent="NavLinks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, -2.68092 )
+script = ExtResource( 1 )
+
+[node name="Start" parent="NavLinks/NavLinkPath" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+mesh = SubResource( 4 )
+material/0 = SubResource( 5 )
+
+[node name="End" parent="NavLinks/NavLinkPath" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18992, -0.413612 )
+mesh = SubResource( 6 )
+material/0 = SubResource( 7 )
+
+[node name="NavLinkPath2" type="Spatial" parent="NavLinks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, -2.68092 )
+script = ExtResource( 1 )
+
+[node name="Start" parent="NavLinks/NavLinkPath2" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16937, -0.417239 )
+
+[node name="End" parent="NavLinks/NavLinkPath2" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.86746, -0.00348425 )
+
+[node name="TeleportLink" type="Spatial" parent="NavLinks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.70108, 0, 3.60224 )
+script = ExtResource( 1 )
+link_cost = 0.2
+
+[node name="Start" parent="NavLinks/TeleportLink" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.218692, 0, 0.35918 )
+mesh = SubResource( 4 )
+material/0 = SubResource( 5 )
+
+[node name="End" parent="NavLinks/TeleportLink" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.35009, 3, -11.317 )
+mesh = SubResource( 6 )
+material/0 = SubResource( 7 )
+
+[node name="DoorLink" type="Spatial" parent="NavLinks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.188193, 2 )
+script = ExtResource( 1 )
+
+[node name="Start" parent="NavLinks/DoorLink" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = SubResource( 5 )
+
+[node name="End" parent="NavLinks/DoorLink" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0 )
+mesh = SubResource( 6 )
+material/0 = SubResource( 7 )
+
+[node name="CameraRoot" type="Spatial" parent="."]
+transform = Transform( 0.815088, 0, 0.579338, 0, 1, 0, -0.579338, 0, 0.815088, 0, 0, -4 )
+
+[node name="Camera" parent="CameraRoot" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, -1.49012e-08, 0, 0.5, 0.866025, 0, -0.866025, 0.5, -2.38419e-07, 18.7798, 13.1407 )
+fov = 45.0
+
+[node name="VisualShapes" type="Spatial" parent="."]
+
+[node name="CSGBox" type="CSGBox" parent="VisualShapes"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.34947, -2.95431 )
+width = 0.579343
+height = 3.37149
+depth = 0.269656
+
+[node name="CSGTorus" type="CSGTorus" parent="VisualShapes"]
+transform = Transform( -2.83499e-08, 0.245671, 0.284097, -0.792, -1.31134e-08, 0, 1.98693e-08, -0.17218, 0.405356, -5.97944, 1, 3.90342 )
+inner_radius = 1.0
+outer_radius = 1.6
+sides = 32
+ring_sides = 16
+
+[node name="CSGTorus2" type="CSGTorus" parent="VisualShapes"]
+transform = Transform( 1.46171e-08, -0.126667, -0.448714, -0.792, -1.31134e-08, 0, -3.13822e-08, 0.271948, -0.209, -1.36648, 4, -7.73689 )
+inner_radius = 1.0
+outer_radius = 1.6
+sides = 32
+ring_sides = 16
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+margin_left = 28.0
+margin_top = 28.0633
+margin_right = 112.0
+margin_bottom = 42.0633
+text = "Teleport cost"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer"]
+margin_left = 28.0
+margin_top = 43.0
+margin_right = 263.0
+margin_bottom = 59.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SliderValue" type="Label" parent="CanvasLayer"]
+margin_left = 29.3997
+margin_top = 59.0
+margin_right = 113.4
+margin_bottom = 73.0
+text = "0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CheckBox" type="CheckBox" parent="CanvasLayer"]
+margin_left = 24.0543
+margin_top = 79.5215
+margin_right = 129.054
+margin_bottom = 103.522
+text = "Door locked"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="follow_path" from="." to="StartPoint" method="_on_Main_follow_path"]
+[connection signal="surface_hit" from="CameraRoot/Camera" to="." method="_on_Camera_surface_hit"]
+[connection signal="surface_hit" from="CameraRoot/Camera" to="StartPoint" method="_on_Camera_surface_hit"]
+[connection signal="value_changed" from="CanvasLayer/HSlider" to="." method="_on_HSlider_value_changed"]
+[connection signal="toggled" from="CanvasLayer/CheckBox" to="." method="_on_CheckBox_toggled"]

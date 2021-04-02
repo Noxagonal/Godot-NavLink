@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="CylinderMesh" id=1]
+top_radius = 0.001
+bottom_radius = 0.1
+height = 0.2
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_unshaded = true
+albedo_color = Color( 1, 0, 0, 1 )
+
+[node name="NavLinkPathStart" type="MeshInstance"]
+layers = 524288
+mesh = SubResource( 1 )
+material/0 = SubResource( 2 )
