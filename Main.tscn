@@ -155,6 +155,10 @@ material/0 = null
 [node name="NavLinkPath" type="Spatial" parent="NavLinks"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, -2.68092 )
 script = ExtResource( 1 )
+link_cost = 1.0
+link_width = 1.0
+link_tags = PoolStringArray(  )
+link_require_tags_type = 0
 
 [node name="Start" parent="NavLinks/NavLinkPath" instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
@@ -169,6 +173,10 @@ material/0 = SubResource( 7 )
 [node name="NavLinkPath2" type="Spatial" parent="NavLinks"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, -2.68092 )
 script = ExtResource( 1 )
+link_cost = 1.0
+link_width = 1.0
+link_tags = PoolStringArray(  )
+link_require_tags_type = 0
 
 [node name="Start" parent="NavLinks/NavLinkPath2" instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16937, -0.417239 )
@@ -180,6 +188,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.86746, -0.00348425 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.70108, 0, 3.60224 )
 script = ExtResource( 1 )
 link_cost = 0.2
+link_width = 1.0
+link_tags = PoolStringArray(  )
+link_require_tags_type = 0
 
 [node name="Start" parent="NavLinks/TeleportLink" instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.218692, 0, 0.35918 )
@@ -194,6 +205,10 @@ material/0 = SubResource( 7 )
 [node name="DoorLink" type="Spatial" parent="NavLinks"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.188193, 2 )
 script = ExtResource( 1 )
+link_cost = 1.0
+link_width = 1.0
+link_tags = PoolStringArray(  )
+link_require_tags_type = 0
 
 [node name="Start" parent="NavLinks/DoorLink" instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0 )
@@ -275,7 +290,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="follow_path" from="." to="StartPoint" method="_on_Main_follow_path"]
-[connection signal="surface_hit" from="CameraRoot/Camera" to="." method="_on_Camera_surface_hit"]
 [connection signal="surface_hit" from="CameraRoot/Camera" to="StartPoint" method="_on_Camera_surface_hit"]
+[connection signal="surface_hit" from="CameraRoot/Camera" to="." method="_on_Camera_surface_hit"]
 [connection signal="value_changed" from="CanvasLayer/HSlider" to="." method="_on_HSlider_value_changed"]
 [connection signal="toggled" from="CanvasLayer/CheckBox" to="." method="_on_CheckBox_toggled"]
